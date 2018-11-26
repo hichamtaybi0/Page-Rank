@@ -10,5 +10,3 @@ Aij = 1 if there is a transition from page Ai to page Aj,
              
 to_markov() takes transition matrix as input and generates the stochastic matrix (probability distribution)
 
-
-# Requirement
