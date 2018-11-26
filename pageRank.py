@@ -1,9 +1,17 @@
-import numpy as np
 from scipy.sparse import csc_matrix
+import numpy as np
+import networkx as nx
 
 d = 0.85
 s = 1 - d
-eps = 1.0e-8
+eps = .0001
+file = 'graph.xml'
+
+def graph2matrix(file):
+    graph = nx.read_graphml(file)
+    matrix = nx.to_numpy_matrix(graph)
+    return matrix
+
 
 def to_markov(G):
     A = csc_matrix(G, dtype=np.float)
@@ -17,15 +25,15 @@ def to_markov(G):
             A[i] /= col_sum[i]
     return A.transpose()
 
+
 def pageRank(G):
-    G = to_markov(G)
-    n = G.shape[1]
+    M = graph2matrix(G)
+    T = to_markov(M)
+    n = T.shape[1]
     v = np.random.rand(n, 1)
     v /= np.linalg.norm(v, 1)
-    # we craete this vector just for the first test in while loop
-    v_p = np.ones((n, 1), dtype=np.float32) * 100
-    H = (d * G) + (((1 - d) / n) * np.ones((n, n), dtype=np.float32))
-
+    v_p = np.ones((n, 1), dtype=np.float32) * 100  # this vector just for the first test in while loop
+    H = (d * T) + (((1 - d) / n) * np.ones((n, n), dtype=np.float32))
     v_t = v
     while sum(np.abs(v_t - v_p)) > eps:
         v_p = v_t
@@ -33,17 +41,7 @@ def pageRank(G):
     return v_t
 
 
-G = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-              [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-              [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-              [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-              [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]])
 
-
-print(pageRank(G)*100)
+if __name__ == '__main__':
+    R = pageRank(file)
+    print(R)
