@@ -7,12 +7,18 @@ s = 1 - d
 eps = .0001
 file = 'graph.xml'
 
+'''
+graph2matrix() creates the transition matrix,
+Aij = 1 if there is a transition from page Ai to page Aj, 0 if not
+'''
 def graph2matrix(file):
     graph = nx.read_graphml(file)
     matrix = nx.to_numpy_matrix(graph)
     return matrix
 
-
+'''
+to_markov() takes transition matrix as input and generates the stochastic matrix (probability distribution)
+'''
 def to_markov(G):
     A = csc_matrix(G, dtype=np.float)
     col_sum = np.array(A.sum(1))[:, 0]
